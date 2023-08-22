@@ -1,0 +1,44 @@
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+# Email server configuration
+smtp_server = 'smtp.example.com'
+smtp_port = 587
+smtp_username = 'your_email@example.com'
+smtp_password = 'your_email_password'
+
+# Email content
+sender_email = 'your_email@example.com'
+subject = 'New Meeting Link'
+message = 'Dear client,\n\nWe would like to invite you to our meeting using the following link:\n\nMeeting Link: https://example.com/meeting\n\nBest regards,\nYour Team'
+
+# List of client email addresses
+client_emails = ['client1@example.com', 'client2@example.com']
+
+# Create a MIMEText object with the email content
+email_content = MIMEText(message, 'plain')
+
+# Create the email
+email = MIMEMultipart()
+email['Subject'] = subject
+email['From'] = sender_email
+
+# Attach the email content to the email
+email.attach(email_content)
+
+# Connect to the email server and send the emails
+try:
+    server = smtplib.SMTP(smtp_server, smtp_port)
+    server.starttls()
+    server.login(smtp_username, smtp_password)
+
+    for client_email in client_emails:
+        email['To'] = client_email
+        server.sendmail(sender_email, client_email, email.as_string())
+        print(f"Email sent to {client_email}")
+
+    server.quit()
+
+except Exception as e:
+    print("An error occurred:", e)
